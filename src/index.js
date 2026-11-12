@@ -1,5 +1,6 @@
 import express from 'express'
 import morgan from 'morgan'
+import router from './routes/user.routes.js'
 
 const app = express()
 
@@ -14,26 +15,7 @@ app.get('/health', (req, res) => {
   })
 })
 
-app.get('/users', (req, res) => {
-  res.json('Todos los usuarios')
-})
-
-app.post('/users', (req, res) => {
-  console.log(req.body)
-  res.status(201).json('Usuario creado')
-})
-
-app.put('/users/:id', (req, res) => {
-  console.log(req.params.id)
-
-  res.json('Usuario actualizado')
-})
-
-app.delete('/users/:id', (req, res) => {
-  console.log(req.params.id)
-
-  res.json('usuario eliminado')
-})
+app.use('/users', router)
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`)

@@ -1,6 +1,7 @@
 import express from 'express'
 import morgan from 'morgan'
 import router from './routes/index.js'
+import { dbConnection } from './config/db.js'
 
 const app = express()
 
@@ -17,6 +18,13 @@ app.get('/health', (req, res) => {
 
 app.use('/', router)
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`)
-})
+dbConnection()
+  .then(() => {
+    console.log('Database connected')
+    app.listen(PORT, () => {
+      console.log(`Server is running on port ${PORT}`)
+    })
+  })
+  .catch(error => {
+    console.error('Error connecting to database:', error)
+  })

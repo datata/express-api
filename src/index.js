@@ -2,6 +2,7 @@ import express from 'express'
 import morgan from 'morgan'
 import router from './routes/index.js'
 import { dbConnection } from './config/db.js'
+import errorHandler from './middlewares/errorHandler.js'
 
 const app = express()
 
@@ -17,6 +18,8 @@ app.get('/health', (req, res) => {
 })
 
 app.use('/', router)
+
+app.use(errorHandler)
 
 dbConnection()
   .then(() => {

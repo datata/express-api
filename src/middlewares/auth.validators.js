@@ -1,20 +1,30 @@
-const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+import { z } from 'zod'
 
-export const validateLogin = (req, res, next) => {
-  const { email, password } = req.body ?? {}
-  const errors = {}
+const registerSchema = z.object({
+  email: z.string().trim().email('A valid email is required'),
+  password: z.string().min(8, 'Password must be at least 8 characters'),
+})
 
-  if (typeof email !== 'string' || !emailPattern.test(email.trim())) {
-    errors.email = 'A valid email is required'
+const loginSchema = z.object({
+  email: z.string().trim().email('A valid email is required'),
+  password: z.string().min(1, 'Password is required'),
+})
+
+const validate = schema => (req, res, next) => {
+  const result = schema.safeParse(req.body)
+
+  if (!result.success) {
+    return res.status(400).json({
+      errors: result.error.issues.map(issue => ({
+        field: issue.path.join('.'),
+        message: issue.message,
+      })),
+    })
   }
 
-  if (typeof password !== 'string' || password.length === 0) {
-    errors.password = 'Password is required'
-  }
-
-  if (Object.keys(errors).length > 0) {
-    return res.status(400).json({ errors })
-  }
-
-  next()
+  req.body = result.data
+  return next()
 }
+
+export const validateRegister = validate(registerSchema)
+export const validateLogin = validate(loginSchema)

@@ -1,5 +1,24 @@
+import User from '../models/user.model.js'
+
 export const getUsers = (req, res) => {
   res.json('Todos los usuarios')
+}
+
+export const getProfile = async (req, res) => {
+  const user = await User.findById(req.user.id).select('-password')
+
+  if (!user) {
+    return res.status(404).json({ error: 'User not found' })
+  }
+
+  return res.json({
+    data: {
+      id: user._id,
+      email: user.email,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    },
+  })
 }
 
 export const createUser = (req, res) => {

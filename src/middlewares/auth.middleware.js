@@ -7,7 +7,6 @@ const authenticate = (req, res, next) => {
 
   const authorization = req.headers.authorization
   const [scheme, token] = authorization?.split(' ') ?? []
-
   if (scheme !== 'Bearer' || !token) {
     return res.status(401).json({ error: 'Authentication token required' })
   }

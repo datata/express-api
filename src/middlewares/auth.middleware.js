@@ -1,8 +1,7 @@
 import jwt from 'jsonwebtoken'
 
 const authenticate = (req, res, next) => {
-  const secret = process.env.JWT_SECRET
-  if (!secret) {
+  if (!process.env.JWT_SECRET) {
     return res.status(500).json({ error: 'Authentication is not configured' })
   }
 
@@ -14,7 +13,9 @@ const authenticate = (req, res, next) => {
   }
 
   try {
-    const payload = jwt.verify(token, secret, { algorithms: ['HS256'] })
+    const payload = jwt.verify(token, process.env.JWT_SECRET, {
+      algorithms: ['HS256'],
+    })
 
     if (typeof payload === 'string' || !payload.id || !payload.email) {
       return res.status(401).json({ error: 'Invalid authentication token' })
